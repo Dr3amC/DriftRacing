@@ -10,6 +10,8 @@ namespace Shared
         private BlobArray<float> _sampledValues;
         private float2 _timeRange;
 
+        public float2 TimeRange => _timeRange;
+
         public static BlobAssetReference<AnimationCurveBlob> Build(AnimationCurve curve, int intervalCount,
             Allocator allocator)
         {

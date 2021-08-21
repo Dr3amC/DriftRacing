@@ -1,12 +1,19 @@
 {
   "dependencies": {
     "com.unity.burst": {
-      "version": "1.5.4",
+      "version": "1.5.5",
       "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1"
       },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.cinemachine": {
+      "version": "2.7.5",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.collab-proxy": {
@@ -74,6 +81,13 @@
     },
     "com.unity.ide.vscode": {
       "version": "1.2.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.inputsystem": {
+      "version": "1.0.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -191,7 +205,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.scriptablebuildpipeline": {
-      "version": "1.15.2",
+      "version": "1.19.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {},

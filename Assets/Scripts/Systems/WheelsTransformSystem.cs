@@ -12,11 +12,12 @@ namespace Systems
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((ref Translation translation, ref Rotation rotation, in WheelOrigin origin,
-                in WheelContact contact) =>
+            Entities.ForEach((ref Translation translation, ref Rotation rotation, in WheelInput input,
+                in WheelContact contact, in WheelOutput output) =>
             {
-                translation.Value = origin.Value.pos - math.rotate(origin.Value.rot, math.up()) * contact.Distance;
-                rotation.Value = origin.Value.rot;
+                var originTransform = input.LocalTransform;
+                translation.Value = originTransform.pos - math.rotate(originTransform.rot, math.up()) * contact.Distance;
+                rotation.Value = math.mul(originTransform.rot, quaternion.AxisAngle(math.right(), output.Rotation));
             }).Schedule();
         }
     }

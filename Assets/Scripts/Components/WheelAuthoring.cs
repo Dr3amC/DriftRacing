@@ -11,6 +11,8 @@ namespace Components
 {
     public class WheelAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
+        public float mass = 20f;
+        
         [Header("Collider")]
         public float radius;
         public float width;
@@ -26,6 +28,10 @@ namespace Components
         public AnimationCurve longitudinal;
         public AnimationCurve lateral;
 
+        [Header("Steering")] 
+        public float maxSteeringAngle;
+        public float driveRate;
+
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             dstManager.AddComponents(entity, new ComponentTypes(new ComponentType[]
@@ -37,7 +43,8 @@ namespace Components
                 typeof(WheelSuspension),
                 typeof(WheelContactVelocity),
                 typeof(WheelOutput),
-                typeof(WheelFriction)
+                typeof(WheelFriction),
+                typeof(WheelControllable)
             }));
             
             var wheelCollider = CylinderCollider.Create(new CylinderGeometry
@@ -61,6 +68,7 @@ namespace Components
                 Radius = radius,
                 Width = width,
                 SuspensionLength = suspensionLength,
+                Inertia = mass * radius * radius * 0.5f,
                 Collider = wheelCollider
             });
             
@@ -86,6 +94,12 @@ namespace Components
                 Longitudinal = longitud,
                 Lateral = later
             });
+            
+            dstManager.SetComponentData(entity, new WheelControllable
+            {
+                MaxSteerAngle = math.radians(maxSteeringAngle),
+                DriveRate = driveRate
+            });
         }
     }
 
@@ -94,6 +108,7 @@ namespace Components
         public float Radius;
         public float Width;
         public float SuspensionLength;
+        public float Inertia;
         public BlobAssetReference<Collider> Collider;
     }
 
@@ -105,8 +120,10 @@ namespace Components
     public struct WheelInput : IComponentData
     {
         public float3 Up;
+        public RigidTransform LocalTransform;
         public RigidTransform WorldTransform;
         public float SuspensionMultiplier;
+        public float Torque;
     }
 
     public struct WheelContact : IComponentData
@@ -132,11 +149,19 @@ namespace Components
     {
         public float3 SuspensionImpulse;
         public float3 FrictionImpulse;
+        public float Rotation;
+        public float RotationSpeed;
     }
 
     public struct WheelFriction : IComponentData
     {
         public BlobAssetReference<AnimationCurveBlob> Longitudinal;
         public BlobAssetReference<AnimationCurveBlob> Lateral;
+    }
+
+    public struct WheelControllable : IComponentData
+    {
+        public float MaxSteerAngle;
+        public float DriveRate;
     }
 }

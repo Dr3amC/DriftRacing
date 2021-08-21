@@ -1,4 +1,5 @@
 ﻿using Components;
+using Extensions;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -51,8 +52,11 @@ namespace Systems
                 output.FrictionImpulse = float3.zero;
                 output.SuspensionImpulse = float3.zero;
 
+                output.RotationSpeed += (input.Torque / wheel.Inertia) * deltaTime;
+
                 if (!contact.IsInContact)
                 {
+                    output.Rotation += output.RotationSpeed * deltaTime;
                     return;
                 }
                 //Suspension
@@ -71,36 +75,84 @@ namespace Systems
                 if (suspensionForceValue > 0)
                 {
                     var lateralDirection = math.rotate(input.WorldTransform.rot, math.right());
-                    var longitudinalDirection = math.normalize(math.cross(lateralDirection, contact.Normal));
+                    var longitudinalDirection = math.normalizesafe(math.cross(lateralDirection, contact.Normal));
+
                     var lateralSpeed = math.dot(lateralDirection, contactVelocity.Value);
                     var longitudinalSpeed = math.dot(longitudinalDirection, contactVelocity.Value);
+
+                    var wheelDeltaSpeed = longitudinalSpeed - output.RotationSpeed.RotationToLinearSpeed(wheel.Radius);
+                    var wheelDeltaSpeedSign = math.sign(wheelDeltaSpeed);
+                    var wheelDeltaSpeedAbs = wheelDeltaSpeedSign * wheelDeltaSpeed;
+
                     var lateralSpeedSign = math.sign(lateralSpeed);
-                    var longitudinalSpeedSign = math.sign(longitudinalSpeed);
-                    var lateralSpeedAbs = lateralSpeed * lateralSpeedSign;
-                    var longitudinalSpeedAbs = longitudinalSpeed * longitudinalSpeedSign;
-                    var lateralFrictionRate = friction.Lateral.Value.Evaluate(lateralSpeedAbs);
-                    var longitudinalFrictionRate = friction.Longitudinal.Value.Evaluate(longitudinalSpeedAbs);
-                
+                    var lateralSpeedAbs = lateralSpeedSign * lateralSpeed;
+
+                    var longitudinalTimeRange = friction.Longitudinal.Value.TimeRange;
+                    var longitudinalSlip = math.saturate(math.unlerp(longitudinalTimeRange.x,
+                        longitudinalTimeRange.y, wheelDeltaSpeedAbs));
+                    var lateralTimeRange = friction.Lateral.Value.TimeRange;
+                    var lateralSlip = math.saturate(math.unlerp(lateralTimeRange.x,
+                        lateralTimeRange.y, lateralSpeedAbs));
+
+                    var combinedSlip = math.max(longitudinalSlip, lateralSlip);
+                    
+                    var lateralFrictionRate = friction.Lateral.Value.Evaluate(
+                        math.lerp(lateralTimeRange.x, lateralTimeRange.y, combinedSlip));
+                    var longitudinalFrictionRate = friction.Longitudinal.Value.Evaluate(
+                        math.lerp(longitudinalTimeRange.x, longitudinalTimeRange.y, combinedSlip));
+
                     var lateralForce = (-lateralSpeedSign * lateralFrictionRate * suspensionForceValue 
                                         * Bias(math.saturate(lateralSpeedAbs), -1)) * lateralDirection;
-                    var longitudinalForce = (-longitudinalSpeedSign * longitudinalFrictionRate * suspensionForceValue 
-                                             * Bias(math.saturate(longitudinalSpeedAbs), -1)) * longitudinalDirection;
+
+                    var longitudinalBias = Bias(math.saturate(wheelDeltaSpeedAbs), -1);
+
+                    var longitudinalFrictionForceValue = -wheelDeltaSpeedSign * longitudinalFrictionRate *
+                                                         longitudinalBias * suspensionForceValue;
+
+
+                    var toNeutralForce =
+                        (-wheelDeltaSpeed.LinearToRotationSpeed(wheel.Radius) * wheel.Inertia / deltaTime)
+                        .TorqueToForce(wheel.Radius);
+
+                    var usedForceValue = math.abs(toNeutralForce) > math.abs(longitudinalFrictionForceValue)
+                        ? longitudinalFrictionForceValue
+                        : toNeutralForce;
+                    output.RotationSpeed -= usedForceValue.ForceToTorque(wheel.Radius) / wheel.Inertia * deltaTime;
+
+                    //ApplyBrakeTorque(ref output, wheel.Inertia, brakeTorque, deltaTime);
+
+                    output.Rotation += output.RotationSpeed * deltaTime;
+                    
+                    var longitudinalForce = longitudinalFrictionForceValue * longitudinalDirection;
+
                     output.FrictionImpulse = (lateralForce + longitudinalForce) * deltaTime;
                 }
             }).Schedule(Dependency);
 
             var dep = JobHandle.CombineDependencies(Dependency, _exportPhysicsWorld.GetOutputDependency());
             
-            Dependency = Entities.ForEach((ref PhysicsVelocity velocity, in Vehicle vehicle, in PhysicsMass mass, in Translation translation,
+            Dependency = Entities.ForEach((ref PhysicsVelocity velocity, ref VehicleOutput output, in Vehicle vehicle, in PhysicsMass mass, in Translation translation,
                 in Rotation rotation) =>
             {
+                output.MaxWheelRotationSpeed = 0.0f;
+                
                 for (var i = 0; i < vehicle.Wheels.Length; i++)
                 {
                     var wheelEntity = vehicle.Wheels[i];
                     var wheelOutput = GetComponent<WheelOutput>(wheelEntity);
                     var wheelContact = GetComponent<WheelContact>(wheelEntity);
-                    
-                    velocity.ApplyImpulse(mass, translation, rotation, wheelOutput.SuspensionImpulse, wheelContact.Point);
+                    var wheelControllable = GetComponent<WheelControllable>(wheelEntity);
+
+                    if (wheelContact.IsInContact)
+                    {
+                        velocity.ApplyImpulse(mass, translation, rotation, wheelOutput.SuspensionImpulse + wheelOutput.FrictionImpulse, wheelContact.Point);
+                    }
+
+                    if (wheelControllable.DriveRate > 0)
+                    {
+                        output.MaxWheelRotationSpeed =
+                            math.max(output.MaxWheelRotationSpeed, wheelOutput.RotationSpeed);
+                    }
                 }
             }).Schedule(dep);
         }
