@@ -15,8 +15,10 @@ namespace Systems
             Entities.ForEach((in Vehicle vehicle, in Translation translation, in Rotation rotation, in PhysicsMass mass,
                 in VehicleInput input, in VehicleEngine engine, in VehicleOutput output) =>
             {
-                var engineTorque = engine.EvaluateTorque(engine.TransmitWheelRotationSpeedToEngineRpm(output.MaxWheelRotationSpeed)) * input.Throttle;
-                var wheelsTorque = engine.TransmitEngineToTorqueToWheelTorque(engineTorque);
+                var engineTorque =
+                    engine.EvaluateTorque(engine.TransmitWheelRotationSpeedToEngineRpm(output.MaxWheelRotationSpeed)) *
+                    input.Throttle;
+                var wheelsTorque = engine.TransmitEngineTorqueToWheelTorque(engineTorque);
                 
                 for (int i = 0; i < vehicle.Wheels.Length; i++)
                 {
@@ -28,15 +30,17 @@ namespace Systems
                     localTransform.rot = math.mul(localTransform.rot,
                         quaternion.AxisAngle(math.up(), input.Steering * controllable.MaxSteerAngle));
                     
-                    var wheelTransform = math.mul(new RigidTransform(rotation.Value, translation.Value), origin.Value);
+                    var wheelTransform = math.mul(new RigidTransform(rotation.Value, translation.Value), localTransform);
                     
                     var wheelInput = new WheelInput
                     {
                         LocalTransform = localTransform,
                         WorldTransform = wheelTransform,
                         Up = math.rotate(wheelTransform.rot, math.up()),
-                        SuspensionMultiplier = 1.0f / mass.InverseMass,
-                        Torque = wheelsTorque * controllable.DriveRate
+                        MassMultiplier = 1.0f / mass.InverseMass,
+                        Torque = wheelsTorque * controllable.DriveRate,
+                        Brake = controllable.BrakeRate * input.Brake,
+                        Handbrake = controllable.HandbrakeRate * input.Handbrake
                     };
                     SetComponent(wheelEntity, wheelInput);
                 }

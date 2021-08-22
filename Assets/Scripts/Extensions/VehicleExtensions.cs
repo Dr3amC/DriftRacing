@@ -45,7 +45,7 @@ namespace Extensions
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float TransmitEngineToTorqueToWheelTorque(this VehicleEngine engine, float torque)
+        public static float TransmitEngineTorqueToWheelTorque(this VehicleEngine engine, float torque)
         {
             return torque * engine.TransmissionRate;
         }

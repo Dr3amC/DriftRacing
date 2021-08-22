@@ -32,6 +32,12 @@ namespace Components
         public float maxSteeringAngle;
         public float driveRate;
 
+        [Header("Brakes")] 
+        public float brakeTorque;
+        public float handbrakeTorque;
+        public float brakeRate;
+        public float handbrakeRate;
+
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             dstManager.AddComponents(entity, new ComponentTypes(new ComponentType[]
@@ -44,7 +50,8 @@ namespace Components
                 typeof(WheelContactVelocity),
                 typeof(WheelOutput),
                 typeof(WheelFriction),
-                typeof(WheelControllable)
+                typeof(WheelControllable),
+                typeof(WheelBrakes)
             }));
             
             var wheelCollider = CylinderCollider.Create(new CylinderGeometry
@@ -98,7 +105,15 @@ namespace Components
             dstManager.SetComponentData(entity, new WheelControllable
             {
                 MaxSteerAngle = math.radians(maxSteeringAngle),
-                DriveRate = driveRate
+                DriveRate = driveRate,
+                BrakeRate = brakeRate,
+                HandbrakeRate = handbrakeRate
+            });
+            
+            dstManager.SetComponentData(entity, new WheelBrakes
+            {
+                BrakeTorque = brakeTorque,
+                HandbrakeTorque = handbrakeTorque
             });
         }
     }
@@ -122,8 +137,10 @@ namespace Components
         public float3 Up;
         public RigidTransform LocalTransform;
         public RigidTransform WorldTransform;
-        public float SuspensionMultiplier;
+        public float MassMultiplier;
         public float Torque;
+        public float Brake;
+        public float Handbrake;
     }
 
     public struct WheelContact : IComponentData
@@ -163,5 +180,13 @@ namespace Components
     {
         public float MaxSteerAngle;
         public float DriveRate;
+        public float BrakeRate;
+        public float HandbrakeRate;
+    }
+
+    public struct WheelBrakes : IComponentData
+    {
+        public float BrakeTorque;
+        public float HandbrakeTorque;
     }
 }

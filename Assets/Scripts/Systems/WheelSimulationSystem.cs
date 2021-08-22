@@ -47,27 +47,53 @@ namespace Systems
             var deltaTime = Time.DeltaTime;
             
             Dependency = Entities.ForEach((ref WheelOutput output, in Wheel wheel, in WheelContact contact, in WheelInput input, in WheelSuspension suspension, 
-                in WheelContactVelocity contactVelocity, in WheelFriction friction) =>
+                in WheelContactVelocity contactVelocity, in WheelFriction friction, in WheelBrakes brakes) =>
             {
                 output.FrictionImpulse = float3.zero;
                 output.SuspensionImpulse = float3.zero;
 
-                output.RotationSpeed += (input.Torque / wheel.Inertia) * deltaTime;
+                var brakeTorque = (brakes.BrakeTorque * input.Brake + brakes.HandbrakeTorque * input.Handbrake) *
+                                  input.MassMultiplier;
+                var engineTorque = input.Torque;
+
+                if (brakeTorque > 0)
+                {
+                    var torqueAbs = math.abs(input.Torque);
+
+                    if (torqueAbs < brakeTorque)
+                    {
+                        brakeTorque -= torqueAbs;
+                        engineTorque = 0f;
+                    }
+                    else
+                    {
+                        engineTorque -= brakeTorque * math.sign(engineTorque);
+                        brakeTorque = 0f;
+                    }
+                }
+
+                output.RotationSpeed += (engineTorque / wheel.Inertia) * deltaTime;
 
                 if (!contact.IsInContact)
                 {
+                    ApplyBrakeTorque(ref output, wheel.Inertia, brakeTorque, deltaTime);
                     output.Rotation += output.RotationSpeed * deltaTime;
                     return;
                 }
                 //Suspension
                 
                 var suspensionDelta = wheel.SuspensionLength - contact.Distance;
-                var suspensionForceValue = suspensionDelta * suspension.Stiffness * input.SuspensionMultiplier;
+                var suspensionForceValue = suspensionDelta * suspension.Stiffness * input.MassMultiplier;
 
                 var suspensionDampingSpeed = math.dot(input.Up, contactVelocity.Value);
-                var suspensionDampingForce = suspensionDampingSpeed * suspension.Damping * input.SuspensionMultiplier;
+                var suspensionDampingForce = suspensionDampingSpeed * suspension.Damping * input.MassMultiplier;
 
                 suspensionForceValue -= suspensionDampingForce;
+                if (suspensionForceValue < 0)
+                {
+                    suspensionForceValue = 0;
+                }
+                
                 var suspensionForce = suspensionForceValue * contact.Normal;
                 output.SuspensionImpulse = suspensionForce * deltaTime;
                 
@@ -119,7 +145,7 @@ namespace Systems
                         : toNeutralForce;
                     output.RotationSpeed -= usedForceValue.ForceToTorque(wheel.Radius) / wheel.Inertia * deltaTime;
 
-                    //ApplyBrakeTorque(ref output, wheel.Inertia, brakeTorque, deltaTime);
+                    ApplyBrakeTorque(ref output, wheel.Inertia, brakeTorque, deltaTime);
 
                     output.Rotation += output.RotationSpeed * deltaTime;
                     
@@ -153,8 +179,24 @@ namespace Systems
                         output.MaxWheelRotationSpeed =
                             math.max(output.MaxWheelRotationSpeed, wheelOutput.RotationSpeed);
                     }
+
+                    output.LocalVelocity = math.rotate(math.inverse(rotation.Value), velocity.Linear);
                 }
             }).Schedule(dep);
+        }
+
+        private static void ApplyBrakeTorque(ref WheelOutput output, float inertia, float brakeTorque, float deltaTime)
+        {
+            if (brakeTorque <= 0)
+            {
+                return;
+            }
+            var toZeroTorque = -output.RotationSpeed * inertia / deltaTime;
+            var toZeroTorqueAbs = math.abs(toZeroTorque);
+
+            var usedBrakeTorque = toZeroTorqueAbs < brakeTorque ? toZeroTorqueAbs : brakeTorque;
+
+            output.RotationSpeed += math.sign(toZeroTorque) * usedBrakeTorque / inertia * deltaTime;
         }
         
         private static float Bias(float x, float bias)

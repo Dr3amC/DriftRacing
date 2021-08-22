@@ -25,7 +25,7 @@ namespace Shared
 
             for (var i = 0; i < intervalCount + 1; i++)
             {
-                sampledValues[i] = curve.Evaluate(timeFrom * i * timeStep);
+                sampledValues[i] = curve.Evaluate(timeFrom + i * timeStep);
             }
 
             root._timeRange = new float2(timeFrom, timeTo);

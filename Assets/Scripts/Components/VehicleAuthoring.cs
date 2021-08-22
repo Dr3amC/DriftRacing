@@ -1,6 +1,7 @@
 using Shared;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Components
@@ -29,7 +30,7 @@ namespace Components
             
             dstManager.SetComponentData(entity, vehicle);
 
-            var engineTorque = AnimationCurveBlob.Build(this.torque, 128, Allocator.Persistent);
+            var engineTorque = AnimationCurveBlob.Build(torque, 128, Allocator.Persistent);
             conversionSystem.BlobAssetStore.AddUniqueBlobAsset(ref engineTorque);
             
             dstManager.SetComponentData(entity, new VehicleEngine
@@ -49,8 +50,16 @@ namespace Components
     {
         public float Steering;
         public float Throttle;
-        public float Break;
+        public float Brake;
         public float Handbrake;
+        public ThrottleMode ThrottleMode;
+    }
+
+    public enum ThrottleMode
+    {
+        AccelerationForward,
+        AccelerationBackward,
+        Braking
     }
 
     public struct VehicleEngine : IComponentData
@@ -62,5 +71,6 @@ namespace Components
     public struct VehicleOutput : IComponentData
     {
         public float MaxWheelRotationSpeed;
+        public float3 LocalVelocity;
     }
 }
