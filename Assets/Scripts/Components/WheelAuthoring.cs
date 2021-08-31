@@ -168,6 +168,7 @@ namespace Components
         public float3 FrictionImpulse;
         public float Rotation;
         public float RotationSpeed;
+        public float Slip;
     }
 
     public struct WheelFriction : IComponentData

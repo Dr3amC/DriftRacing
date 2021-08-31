@@ -378,6 +378,8 @@ GameObject:
   - component: {fileID: 44732200}
   - component: {fileID: 44732199}
   - component: {fileID: 44732205}
+  - component: {fileID: 44732206}
+  - component: {fileID: 44732207}
   m_Layer: 0
   m_Name: Vehicle
   m_TagString: Untagged
@@ -411,21 +413,21 @@ MonoBehaviour:
     y: 0
     z: 0
   m_GravityFactor: 1
-  m_OverrideDefaultMassDistribution: 0
+  m_OverrideDefaultMassDistribution: 1
   m_CenterOfMass:
     x: 0
-    y: 0
-    z: 0
+    y: 0.25
+    z: -0.17
   m_Orientation:
     Value:
-      x: 0
+      x: 5.7
       y: 0
       z: 0
     RotationOrder: 4
   m_InertiaTensor:
-    x: 0.4
-    y: 0.4
-    z: 0.4
+    x: 1.168006
+    y: 1.266531
+    z: 0.3110914
   m_CustomTags:
     Tag00: 0
     Tag01: 0
@@ -677,7 +679,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 2500
+      value: 4500
       inSlope: -0.14150976
       outSlope: -0.14150976
       tangentMode: 0
@@ -685,7 +687,16 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.16666667
     - serializedVersion: 3
-      time: 1000
+      time: 226.66443
+      value: 4500
+      inSlope: 0.1531777
+      outSlope: 0.1531777
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30568266
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 2000
       value: 0
       inSlope: 0
       outSlope: 0
@@ -697,6 +708,30 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   transmissionRate: 1
+--- !u!114 &44732206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44732198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7d961d96cf64499a543acfe88a8c2f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &44732207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44732198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45d892bf337c4aa5ac4190c6390f14ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &246432808
 GameObject:
   m_ObjectHideFlags: 0
@@ -876,28 +911,37 @@ MonoBehaviour:
     Category30: 1
     Category31: 1
   suspensionLength: 0.2
-  stiffness: 40
-  damping: 4
+  stiffness: 80
+  damping: 7
   longitudinal:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1.2
-      inSlope: -0.0009827124
-      outSlope: -0.0009827124
+      value: 2
+      inSlope: 0.001996585
+      outSlope: 0.001996585
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.12042389
+      outWeight: 0.17634055
     - serializedVersion: 3
-      time: 20
-      value: 0.9
-      inSlope: -0.05115927
-      outSlope: -0.05115927
+      time: 11.006878
+      value: 1.7610657
+      inSlope: -0.06524902
+      outSlope: -0.06524902
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.11959686
+      inWeight: 0.13478854
+      outWeight: 0.06538544
+    - serializedVersion: 3
+      time: 20
+      value: 1.5
+      inSlope: -0.0050657615
+      outSlope: -0.0050657615
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.26757094
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -907,7 +951,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 1.2
       inSlope: -0.00076434115
       outSlope: -0.00076434115
       tangentMode: 0
@@ -915,21 +959,30 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.15414259
     - serializedVersion: 3
-      time: 20
-      value: 0.25
-      inSlope: -0.0008310948
-      outSlope: -0.0008310948
+      time: 25.485435
+      value: 0.7849572
+      inSlope: -0.04899627
+      outSlope: -0.04899627
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.099229336
+      inWeight: 0.09119508
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 50
+      value: 0.25
+      inSlope: -0.0005509791
+      outSlope: -0.0005509791
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.1807548
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxSteeringAngle: 35
+  maxSteeringAngle: 50
   driveRate: 0
-  brakeTorque: 1
-  handbrakeTorque: 2
+  brakeTorque: 10
+  handbrakeTorque: 20
   brakeRate: 0.25
   handbrakeRate: 0
 --- !u!1 &491884767
@@ -1111,28 +1164,37 @@ MonoBehaviour:
     Category30: 1
     Category31: 1
   suspensionLength: 0.2
-  stiffness: 40
-  damping: 4
+  stiffness: 80
+  damping: 7
   longitudinal:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1.2
-      inSlope: -0.0009827124
-      outSlope: -0.0009827124
+      value: 2
+      inSlope: 0.001996585
+      outSlope: 0.001996585
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.12042389
+      outWeight: 0.17634055
     - serializedVersion: 3
-      time: 20
-      value: 0.9
-      inSlope: -0.05115927
-      outSlope: -0.05115927
+      time: 11.006878
+      value: 1.7610657
+      inSlope: -0.06524902
+      outSlope: -0.06524902
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.11959686
+      inWeight: 0.13478854
+      outWeight: 0.06538544
+    - serializedVersion: 3
+      time: 20
+      value: 1.5
+      inSlope: -0.0050657615
+      outSlope: -0.0050657615
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.26757094
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -1142,7 +1204,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 1.2
       inSlope: -0.00076434115
       outSlope: -0.00076434115
       tangentMode: 0
@@ -1150,21 +1212,30 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.15414259
     - serializedVersion: 3
-      time: 20
-      value: 0.25
-      inSlope: -0.0008310948
-      outSlope: -0.0008310948
+      time: 25.485435
+      value: 0.7849572
+      inSlope: -0.04899627
+      outSlope: -0.04899627
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.099229336
+      inWeight: 0.09119508
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 50
+      value: 0.25
+      inSlope: -0.0005509791
+      outSlope: -0.0005509791
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.1807548
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   maxSteeringAngle: 0
-  driveRate: 1
-  brakeTorque: 1
-  handbrakeTorque: 2
+  driveRate: 0.5
+  brakeTorque: 10
+  handbrakeTorque: 20
   brakeRate: 0.25
   handbrakeRate: 0.5
 --- !u!1 &652308486
@@ -1717,28 +1788,37 @@ MonoBehaviour:
     Category30: 1
     Category31: 1
   suspensionLength: 0.2
-  stiffness: 40
-  damping: 4
+  stiffness: 80
+  damping: 7
   longitudinal:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1.2
-      inSlope: -0.0009827124
-      outSlope: -0.0009827124
+      value: 2
+      inSlope: 0.001996585
+      outSlope: 0.001996585
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.12042389
+      outWeight: 0.17634055
     - serializedVersion: 3
-      time: 20
-      value: 0.9
-      inSlope: -0.05115927
-      outSlope: -0.05115927
+      time: 11.006878
+      value: 1.7610657
+      inSlope: -0.06524902
+      outSlope: -0.06524902
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.11959686
+      inWeight: 0.13478854
+      outWeight: 0.06538544
+    - serializedVersion: 3
+      time: 20
+      value: 1.5
+      inSlope: -0.0050657615
+      outSlope: -0.0050657615
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.26757094
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -1748,7 +1828,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 1.2
       inSlope: -0.00076434115
       outSlope: -0.00076434115
       tangentMode: 0
@@ -1756,21 +1836,30 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.15414259
     - serializedVersion: 3
-      time: 20
-      value: 0.25
-      inSlope: -0.0008310948
-      outSlope: -0.0008310948
+      time: 25.485435
+      value: 0.7849572
+      inSlope: -0.04899627
+      outSlope: -0.04899627
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.099229336
+      inWeight: 0.09119508
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 50
+      value: 0.25
+      inSlope: -0.0005509791
+      outSlope: -0.0005509791
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.1807548
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxSteeringAngle: 35
+  maxSteeringAngle: 50
   driveRate: 0
-  brakeTorque: 1
-  handbrakeTorque: 2
+  brakeTorque: 10
+  handbrakeTorque: 20
   brakeRate: 0.25
   handbrakeRate: 0
 --- !u!1 &1662349175
@@ -1952,28 +2041,37 @@ MonoBehaviour:
     Category30: 1
     Category31: 1
   suspensionLength: 0.2
-  stiffness: 40
-  damping: 4
+  stiffness: 80
+  damping: 7
   longitudinal:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1.2
-      inSlope: -0.0009827124
-      outSlope: -0.0009827124
+      value: 2
+      inSlope: 0.001996585
+      outSlope: 0.001996585
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.12042389
+      outWeight: 0.17634055
     - serializedVersion: 3
-      time: 20
-      value: 0.9
-      inSlope: -0.05115927
-      outSlope: -0.05115927
+      time: 11.006878
+      value: 1.7610657
+      inSlope: -0.06524902
+      outSlope: -0.06524902
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.11959686
+      inWeight: 0.13478854
+      outWeight: 0.06538544
+    - serializedVersion: 3
+      time: 20
+      value: 1.5
+      inSlope: -0.0050657615
+      outSlope: -0.0050657615
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.26757094
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -1983,7 +2081,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 1.2
       inSlope: -0.00076434115
       outSlope: -0.00076434115
       tangentMode: 0
@@ -1991,21 +2089,30 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.15414259
     - serializedVersion: 3
-      time: 20
-      value: 0.25
-      inSlope: -0.0008310948
-      outSlope: -0.0008310948
+      time: 25.485435
+      value: 0.7849572
+      inSlope: -0.04899627
+      outSlope: -0.04899627
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.099229336
+      inWeight: 0.09119508
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 50
+      value: 0.25
+      inSlope: -0.0005509791
+      outSlope: -0.0005509791
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.1807548
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   maxSteeringAngle: 0
-  driveRate: 1
-  brakeTorque: 1
-  handbrakeTorque: 2
+  driveRate: 0.5
+  brakeTorque: 10
+  handbrakeTorque: 20
   brakeRate: 0.25
   handbrakeRate: 0.5
 --- !u!1 &1679508145
@@ -2087,7 +2194,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.9956354, y: 1}
+    m_SensorSize: {x: 1.5485799, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0

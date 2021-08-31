@@ -71,6 +71,7 @@ namespace Components
     public struct VehicleOutput : IComponentData
     {
         public float MaxWheelRotationSpeed;
+        public float AverageWheelRotationSpeed;
         public float3 LocalVelocity;
     }
 }

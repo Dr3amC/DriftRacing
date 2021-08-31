@@ -43,6 +43,13 @@ namespace Systems
                         Handbrake = controllable.HandbrakeRate * input.Handbrake
                     };
                     SetComponent(wheelEntity, wheelInput);
+
+                    if (controllable.DriveRate > 0)
+                    {
+                        var wheelOutput = GetComponent<WheelOutput>(wheelEntity);
+                        wheelOutput.RotationSpeed = output.AverageWheelRotationSpeed;
+                        SetComponent(wheelEntity, wheelOutput);
+                    }
                 }
             }).Schedule();
         }
