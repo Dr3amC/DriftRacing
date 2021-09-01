@@ -1,8 +1,9 @@
 ﻿using Components;
-using Settings;
+using Core.Services;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using Zenject;
 
 namespace Systems
 {
@@ -10,26 +11,13 @@ namespace Systems
     [UpdateBefore(typeof(FixedStepSimulationSystemGroup))]
     public class VehicleInputSystem : SystemBase
     {
-        private Controls _controls;
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-            _controls = new Controls();
-            _controls.Enable();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _controls.Dispose();
-        }
+        private IInputService _input;
 
         protected override void OnUpdate()
         {
-            var movementInput = _controls.Player.Movement.ReadValue<float>();
-            var steeringInput = _controls.Player.Steering.ReadValue<float>();
-            var handbrakeInput = _controls.Player.Handbrake.ReadValue<float>();
+            var movementInput = _input.Player.Movement.ReadValue<float>();
+            var steeringInput = _input.Player.Steering.ReadValue<float>();
+            var handbrakeInput = _input.Player.Handbrake.ReadValue<float>();
             var deltaTime = Time.DeltaTime;
 
             Entities.ForEach((ref VehicleInput vehicleInput, in VehicleOutput output) =>
@@ -70,6 +58,12 @@ namespace Systems
                 vehicleInput.Handbrake = Mathf.MoveTowards(vehicleInput.Handbrake, handbrakeInput, deltaTime * 10);
                 
             }).Schedule();
+        }
+
+        [Inject]
+        private void Inject(IInputService inputService)
+        {
+            _input = inputService;
         }
     }
 }
