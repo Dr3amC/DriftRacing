@@ -16,7 +16,7 @@ namespace Systems
                 in WheelOutput output, in Wheel wheel, in Rotation rotation, in WheelContactVelocity velocity) =>
             {
                 
-            });
+            }).Schedule();
         }
         
         private struct Sequences
