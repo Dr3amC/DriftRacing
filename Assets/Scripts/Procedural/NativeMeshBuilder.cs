@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Collections;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Procedural
@@ -83,6 +84,25 @@ namespace Procedural
             Indices[index + 3] = (uint) (_indexOffset + i0);
             Indices[index + 4] = (uint) (_indexOffset + i2);
             Indices[index + 5] = (uint) (_indexOffset + i3);
+        }
+        
+        public void ToMeshData(ref Mesh.MeshData meshData)
+        {
+            using (var attributeArray = _staticAttributes.ToNativeArray(Allocator.Temp))
+            {
+                meshData.SetVertexBufferParams(Vertices.Length, attributeArray);
+            }
+
+            var vertexData = meshData.GetVertexData<TVertex>();
+            vertexData.CopyFrom(Vertices);
+            
+            meshData.SetIndexBufferParams(Indices.Length, IndexFormat.UInt32);
+            var indexData = meshData.GetIndexData<uint>();
+            indexData.CopyFrom(Indices);
+            meshData.subMeshCount = 1;
+            meshData.SetSubMesh(0,  new SubMeshDescriptor(0, Indices.Length, MeshTopology.Triangles), MeshUpdateFlags.DontNotifyMeshUsers 
+                | MeshUpdateFlags.DontRecalculateBounds 
+                | MeshUpdateFlags.DontValidateIndices);
         }
 
         public void Dispose()

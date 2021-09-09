@@ -1,5 +1,6 @@
 ﻿using Components;
 using Components.Effects;
+using Shared;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -12,11 +13,41 @@ namespace Systems
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((Entity entity, in WheelSkidmarks skidmarks, in Surface wheelOnSurface, in WheelContact contact,
+            var time = UnityEngine.Time.time;
+            
+            Dependency = Entities.ForEach((Entity entity, in WheelSkidmarks skidmarks, in Surface wheelOnSurface, in WheelContact contact,
                 in WheelOutput output, in Wheel wheel, in Rotation rotation, in WheelContactVelocity velocity) =>
             {
+                var lastSequence = new Sequences(GetBuffer<SkidmarksPoint>(skidmarks.ActiveSkidmarks), GetBuffer<SkidmarksSequence>(skidmarks.ActiveSkidmarks));
+
+                if (!contact.IsInContact)
+                {
+                    lastSequence.Complete();
+                    return;
+                }
+
+                if (output.Slip < 0.1f)
+                {
+                    lastSequence.Complete();
+                }
+                else
+                {
+                    var contactVelocity = velocity.Value.ProjectOnPlane(contact.Normal);
+                    var direction = math.normalizesafe(contactVelocity);
+                    var right = math.cross(contact.Normal, direction);
+                    var point = new SkidmarksPoint
+                    {
+                        Position = contact.Point,
+                        Normal = contact.Normal,
+                        Intensity = output.Slip,
+                        Right = right,
+                        Width = wheel.Width,
+                        CreationTime = time
+                    };
+                    lastSequence.Continue(point);
+                }
                 
-            }).Schedule();
+            }).Schedule(Dependency);
         }
         
         private struct Sequences
