@@ -15,8 +15,9 @@ namespace Systems
         {
             var time = UnityEngine.Time.time;
             
-            Dependency = Entities.ForEach((Entity entity, in WheelSkidmarks skidmarks, in Surface wheelOnSurface, in WheelContact contact,
-                in WheelOutput output, in Wheel wheel, in Rotation rotation, in WheelContactVelocity velocity) =>
+            Entities.ForEach((Entity entity, in WheelSkidmarks skidmarks, in Surface wheelOnSurface,
+                in WheelContact contact, in WheelOutput output, in Wheel wheel, in Rotation rotation,
+                in WheelContactVelocity velocity) =>
             {
                 var lastSequence = new Sequences(GetBuffer<SkidmarksPoint>(skidmarks.ActiveSkidmarks), GetBuffer<SkidmarksSequence>(skidmarks.ActiveSkidmarks));
 
@@ -47,7 +48,7 @@ namespace Systems
                     lastSequence.Continue(point);
                 }
                 
-            }).Schedule(Dependency);
+            }).Schedule();
         }
         
         private struct Sequences

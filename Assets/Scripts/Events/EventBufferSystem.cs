@@ -33,6 +33,8 @@ namespace Events
                 {
                     return;
                 }
+                
+                _producerJobs.Complete();
 
                 foreach (var buffer in _buffers)
                 {

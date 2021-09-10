@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using Components.Effects;
+using Unity.Entities;
 using UnityEngine;
 
 namespace Components
@@ -8,6 +9,7 @@ namespace Components
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
             dstManager.AddComponents(entity, new ComponentTypes(
+                typeof(Surface)
             ));
         }
     }

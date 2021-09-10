@@ -44,6 +44,12 @@ namespace Systems
                 renderMesh.mesh = new Mesh();
                 EntityManager.SetSharedComponentData(entity, renderMesh);
                 AttachSkidmarks(request.Wheel, entity, request.SurfaceIndex);
+                
+                if (previousPoint.HasValue)
+                {
+                    var points = GetBuffer<SkidmarksPoint>(entity);
+                    points.Add(previousPoint.Value);
+                }
             }
         }
         

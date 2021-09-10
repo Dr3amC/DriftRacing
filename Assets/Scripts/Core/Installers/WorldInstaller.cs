@@ -1,9 +1,12 @@
-﻿using Unity.Entities;
+﻿using System.Collections.Generic;
+using Unity.Entities;
 using Zenject;
+using Core.Services;
+using UnityEngine;
 
 namespace Core.Installers
 {
-    public class WorldInstaller : MonoInstaller
+    public class WorldInstaller : MonoInstaller, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
         public override void InstallBindings()
         {
@@ -29,6 +32,24 @@ namespace Core.Installers
             }
 
             return world;
+        }
+        
+        public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+        {
+            var prefabProviders = Container.ResolveAll<Services.IPrefabProvider>();
+            foreach (var prefabProvider in prefabProviders)
+            {
+                prefabProvider.PreparePrefabs(conversionSystem);
+            }
+        }
+        
+        public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
+        {
+            var prefabProviders = Container.ResolveAll<Services.IPrefabProvider>();
+            foreach (var prefabProvider in prefabProviders)
+            {
+                prefabProvider.DeclarePrefabs(referencedPrefabs);
+            }
         }
     }
 }
